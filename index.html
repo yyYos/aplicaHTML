@@ -1,14 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muestra de prodcutos</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Búsqueda con Lista de Resultados Flotante</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .search-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .search-wrapper {
+            position: relative;
+        }
+        #nombreInstrumento {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        #nombreInstrumento::-webkit-search-cancel-button {
+            cursor: pointer;
+        }
+        #resultsList {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            background: pink;
+        }
+        #resultsList li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        #resultsList li:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Primera h1</h1>
+    <div class="search-container">
+        <h1>Búsqueda</h1>
+        <div class="search-wrapper">
+            <input type="search" id="nombreInstrumento" placeholder="Escribe para buscar...">
+            <ul id="resultsList"></ul>
+        </div>
+    </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const nombreInstrumento = document.getElementById('nombreInstrumento');
+            const resultsList = document.getElementById('resultsList');
+            let debounceTimer;
+
+            nombreInstrumento.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const searchTerm = nombreInstrumento.value.trim();
+                    if (searchTerm.length > 0) {
+                        performSearch(searchTerm);
+                    } else {
+                        clearResults();
+                    }
+                }, 300); // Espera 300ms después de que el usuario deje de escribir
+            });
+
+            nombreInstrumento.addEventListener('search', () => {
+                if (nombreInstrumento.value.trim() === '') {
+                    clearResults();
+                }
+            });
+
+            // Cerrar la lista de resultados al hacer clic fuera de ella
+            document.addEventListener('click', (event) => {
+                if (!nombreInstrumento.contains(event.target) && !resultsList.contains(event.target)) {
+                    clearResults();
+                }
+            });
+
+            function performSearch(term) {
+                // Aquí normalmente harías una llamada a una API
+                // Por ahora, simularemos una búsqueda
+                console.log('Buscando:', term);
+                
+                // Simulación de una búsqueda asíncrona
+                setTimeout(() => {
+                    const fakeResults = [
+                        `Resultado 1 para "${term}"`,
+                        `Resultado 2 para "${term}"`,
+                        `Resultado 3 para "${term}"`,
+                        `Resultado 4 para "${term}"`,
+                        `Resultado 5 para "${term}"`
+                    ];
+                    displayResults(fakeResults);
+                }, 300);
+            }
+
+            function displayResults(results) {
+                clearResults();
+                if (results.length > 0) {
+                    results.forEach(result => {
+                        const li = document.createElement('li');
+                        li.textContent = result;
+                        resultsList.appendChild(li);
+                    });
+                    resultsList.style.display = 'block';
+                }
+            }
+
+            function clearResults() {
+                resultsList.innerHTML = '';
+                resultsList.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
